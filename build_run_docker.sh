@@ -57,12 +57,40 @@ run_image () {
         done
 }
 
-select option in "Activate Docker Daemon" "Build Image" "Run Image" Quit; do
+select option in "Docker Daemon" "Build Image" "Run Image" "Quit"; do
     case $option in
-        "Activate Docker Daemon") # TODO: make more interactive
-            sudo systemctl enable docker
-            sudo systemctl start docker
-            sudo systemctl restart docker
+        "Docker Daemon")
+            while true
+                do
+                    select activate_opt in "Enable Docker" "Start Docker" "Restart Docker" "Stop Docker" "Quit"; do
+                        case $activate_opt in
+                            "Enable Docker")
+                                echo "Enabling docker... "
+                                sudo systemctl enable docker
+                                break;;
+                            "Start Docker")
+                                echo "Starting docker..."
+                                sudo systemctl start docker
+                                sudo systemctl status docker --no-pager
+                                break;;
+                            "Restart Docker")
+                                echo "Restarting docker..."
+                                sudo systemctl restart docker
+                                break;;
+                            "Stop Docker")
+                                sudo systemctl stop docker
+                                sudo systemctl status docker --no-pager
+                                break;;
+                            "Quit")
+                                echo "Exiting..."
+                                exit
+                                break;;
+                            *)
+                                echo "Invalid option! Please try again."
+                                ;;
+                        esac
+                    done
+                done
             break
             ;;
         "Build Image")
@@ -79,7 +107,7 @@ select option in "Activate Docker Daemon" "Build Image" "Run Image" Quit; do
             run_image "$tag_name"
             break
             ;;
-        Quit)
+        "Quit")
             echo "Exiting the program..."
             break
             ;;
